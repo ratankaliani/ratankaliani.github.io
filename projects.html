@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Projects</title>
+    <meta name="description" content="I'm a product engineer based in San Francisco.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta property="og:title" content="Ratan Kaliani">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="ratankaliani.com">
+    <meta property="og:image" content="">
+
+    <link rel="icon" href="images/favicon.ico" sizes="any">
+    <link rel="icon" href="images/favicon.ico" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="images/favicon.ico">
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="manifest" href="site.webmanifest">
+    <meta name="theme-color" content="#fafafa">
+
+    <style>
+        .project {
+            padding-bottom: 5px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .project.visible {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="simple-container">
+        <div class="header">
+            <p class="back">
+                <a href="index.html">back to home</a>
+            </p>
+            <p class="subpage">Pursuits</p>
+
+            <div class="row personal-elem">
+                <div class="project">
+                    SP1: The fastest, most feature-complete zero-knowledge virtual machine (zkVM) that can prove the execution of arbitrary Rust (or any LLVM-compiled language). [<a
+                        href="https://github.com/succinctlabs/sp1" target="_blank">github</a>]
+                </div>
+
+                <div class="project">
+                    OP Succinct: Proving the OP Stack with SP1. 
+                    [<a href="https://blog.succinct.xyz/op-succinct/" target="_blank">blog</a>]
+                    [<a href="https://x.com/ratankaliani/status/1833968903162396945" target="_blank">twitter</a>]
+                    [<a href="https://github.com/succinctlabs/op-succinct" target="_blank">github</a>]
+                </div>
+
+                <div class="project">
+                    zkPoll: Anonymously voting on Ethereum with zero-knowledge proofs. [<a href="https://github.com/zk-poll/zk-poll" target="_blank">github</a>]
+                </div>
+
+                <div class="project">
+                    SP1 Blobstream: Zero-knowledge circuits for verifying Blobstream, Celestia's Ethereum data availability solution. 
+                    [<a href="https://github.com/succinctlabs/sp1-blobstream" target="_blank">github</a>]
+                    [<a href="https://medium.com/@succinctlabs/succinct-labs-announces-sp1-blobstream-48899999222f" target="_blank">youtube</a>]
+                </div>
+
+                <div class="project">
+                    Microgrid: P2P Energy Sharing Solution. [<a href="https://github.com/ratankaliani/microgrid" target="_blank">github</a>] [<a href="https://youtu.be/abb4BOO2_os?si=MVbg5abiwpMBa7XK" target="_blank">demo</a>]
+                </div>
+            </div>
+            <br>
+            <br>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const projects = document.querySelectorAll('.project');
+            let index = 0;
+
+            function fadeInNextProject() {
+                if (index < projects.length) {
+                    projects[index].classList.add('visible');
+                    index++;
+                    setTimeout(fadeInNextProject, 100); // Adjust this value to change the delay between projects
+                }
+            }
+
+            fadeInNextProject();
+        });
+    </script>
+
+</body>
+
+</html>
