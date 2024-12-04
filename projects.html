@@ -37,43 +37,142 @@
 </head>
 
 <body>
+    <header class="site-header">
+        <div class="header-content">
+            <a href="index.html" style="text-decoration: none;">
+                <h1>Ratan Kaliani</h1>
+            </a>
+        </div>
+        <div class="header-nav">
+            <a href="index.html">Home</a>
+            <a href="projects.html">Projects</a>
+            <a href="https://curius.app/ratan-kaliani">Curiosities</a>
+        </div>
+    </header>
 
     <div class="simple-container">
-        <div class="header">
-            <p class="back">
-                <a href="index.html">back to home</a>
-            </p>
-            <p class="subpage">Pursuits</p>
-
-            <div class="row personal-elem">
-                <div class="project">
-                    SP1: The fastest, most feature-complete zero-knowledge virtual machine (zkVM) that can prove the execution of arbitrary Rust (or any LLVM-compiled language). [<a
-                        href="https://github.com/succinctlabs/sp1" target="_blank">github</a>]
+        <div class="project-card">
+            <div class="project-details">
+                <div class="project-title-section">
+                    <h2 style="margin: 0;">OP Succinct</h2>
+                    <h2 class="project-date" style="margin: 0;">2024</h2>
                 </div>
-
-                <div class="project">
-                    OP Succinct: Proving the OP Stack with SP1. 
-                    [<a href="https://blog.succinct.xyz/op-succinct/" target="_blank">blog</a>]
-                    [<a href="https://x.com/ratankaliani/status/1833968903162396945" target="_blank">twitter</a>]
-                    [<a href="https://github.com/succinctlabs/op-succinct" target="_blank">github</a>]
+                <div class="project-tags">
+                    <span>Rust</span>
+                    <span>Svelte</span>
+                    <span>Systems</span>
                 </div>
-
-                <div class="project">
-                    zkPoll: Anonymously voting on Ethereum with zero-knowledge proofs. [<a href="https://github.com/zk-poll/zk-poll" target="_blank">github</a>]
-                </div>
-
-                <div class="project">
-                    SP1 Blobstream: Zero-knowledge circuits for verifying Blobstream, Celestia's Ethereum data availability solution. 
-                    [<a href="https://github.com/succinctlabs/sp1-blobstream" target="_blank">github</a>]
-                    [<a href="https://medium.com/@succinctlabs/succinct-labs-announces-sp1-blobstream-48899999222f" target="_blank">youtube</a>]
-                </div>
-
-                <div class="project">
-                    Microgrid: P2P Energy Sharing Solution. [<a href="https://github.com/ratankaliani/microgrid" target="_blank">github</a>] [<a href="https://youtu.be/abb4BOO2_os?si=MVbg5abiwpMBa7XK" target="_blank">demo</a>]
-                </div>
+                <p class="project-description">
+                    Proving the OP Stack with SP1 for secure and efficient Layer 2 scaling.
+                </p>
+                <p class="project-links">
+                    Links: <a href="https://blog.succinct.xyz/op-succinct/" target="_blank">Blog</a>, <a
+                        href="https://x.com/ratankaliani/status/1833968903162396945" target="_blank">Twitter</a>, <a
+                        href="https://github.com/succinctlabs/op-succinct" target="_blank">GitHub</a>
+                </p>
             </div>
-            <br>
-            <br>
+            <div class="project-image">
+                <img src="https://blog.succinct.xyz/content/images/size/w2000/2024/10/blog-header-aspect-4.png"
+                    alt="OP Succinct preview" />
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-details">
+                <div class="project-title-section">
+                    <h2 style="margin: 0;">SP1</h2>
+                    <h2 class="project-date" style="margin: 0;">2024</h2>
+                </div>
+                <div class="project-tags">
+                    <span>Rust</span>
+                    <span>Zero Knowledge</span>
+                    <span>Systems</span>
+                </div>
+                <p class="project-description">
+                    The fastest, most feature-complete zkVM for proving arbitrary RISC-V computation.
+                </p>
+                <p class="project-links">
+                    Links: <a href="https://github.com/succinctlabs/sp1" target="_blank">GitHub</a>
+                </p>
+            </div>
+            <div class="project-image">
+                <img src="https://docs.succinct.xyz/assets/images/sp1-95bcd700ff147045135ad0d0e96a2722.png"
+                    alt="SP1 preview" />
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-details">
+                <div class="project-title-section">
+                    <h2 style="margin: 0;">zkPoll</h2>
+                    <h2 class="project-date" style="margin: 0;">2023</h2>
+                </div>
+                <div class="project-tags">
+                    <span>Solidity</span>
+                    <span>Zero Knowledge</span>
+                    <span>Web3</span>
+                </div>
+                <p class="project-description">
+                    Anonymous voting system on Ethereum using zero-knowledge proofs.
+                </p>
+                <p class="project-links">
+                    Links: <a href="https://github.com/zk-poll/zk-poll" target="_blank">GitHub</a>
+                </p>
+            </div>
+            <div class="project-image">
+                <img src="https://zkpoll.xyz/zkpoll_logo.png" alt="ZK Poll preview" />
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-details">
+                <div class="project-title-section">
+                    <h2 style="margin: 0;">SP1 Blobstream</h2>
+                    <h2 class="project-date" style="margin: 0;">2023</h2>
+                </div>
+                <div class="project-tags">
+                    <span>Rust</span>
+                    <span>Zero Knowledge</span>
+                    <span>Data Availability</span>
+                </div>
+                <p class="project-description">
+                    Zero-knowledge circuits for verifying Celestia's Ethereum data availability solution.
+                </p>
+                <p class="project-links">
+                    Links: <a href="https://github.com/succinctlabs/sp1-blobstream" target="_blank">GitHub</a>, <a
+                        href="https://medium.com/@succinctlabs/succinct-labs-announces-sp1-blobstream-48899999222f"
+                        target="_blank">Blog</a>
+                </p>
+            </div>
+            <div class="project-image">
+                <img src="https://blog.succinct.xyz/content/images/size/w2000/2024/10/blog-header-aspect-3.png"
+                    alt="SP1 Blobstream preview" />
+            </div>
+        </div>
+
+        <div class="project-card">
+            <div class="project-details">
+                <div class="project-title-section">
+                    <h2 style="margin: 0;">Microgrid</h2>
+                    <h2 class="project-date" style="margin: 0;">2021</h2>
+                </div>
+                <div class="project-tags">
+                    <span>Python</span>
+                    <span>IoT</span>
+                    <span>Energy</span>
+                </div>
+                <p class="project-description">
+                    Peer-to-peer energy sharing platform enabling local power distribution.
+                </p>
+                <p class="project-links">
+                    Links: <a href="https://github.com/ratankaliani/microgrid" target="_blank">GitHub</a>, <a
+                        href="https://youtu.be/abb4BOO2_os?si=MVbg5abiwpMBa7XK" target="_blank">Demo</a>
+                </p>
+            </div>
+            <div class="project-image">
+                <img src="https://raw.githubusercontent.com/ratankaliani/microgrid/refs/heads/master/assets/microgrid_logo.png"
+                    alt="Microgrid preview" />
+            </div>
         </div>
     </div>
 
