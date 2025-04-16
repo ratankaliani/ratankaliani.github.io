@@ -1,3 +1,53 @@
+:root {
+  --max-width: 700px;
+  --font-main: system-ui, -apple-system, sans-serif;
+}
+
+body {
+  font-family: var(--font-main);
+  line-height: 1.6;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 20px;
+  color: #222;
+}
+
+.site-header {
+  margin-bottom: 2rem;
+}
+
+.header-content h1 {
+  margin: 0;
+  font-size: 2rem;
+  color: #222;
+}
+
+.header-nav {
+  margin-top: 1rem;
+}
+
+.header-nav a {
+  color: #555;
+  text-decoration: none;
+  margin-right: 1rem;
+}
+
+.header-nav a:hover {
+  color: #000;
+}
+
+.blog-link {
+  display: block;
+  padding: 0.5rem 0;
+  color: #222;
+  text-decoration: none;
+  border-bottom: 1px solid #eee;
+}
+
+.blog-link:hover {
+  background: #f9f9f9;
+}
+
 .site-header .header-content {
   max-width: 700px;
   margin: 0 auto;
@@ -53,15 +103,6 @@
   font-size: medium;
   font-weight: bold;
   margin-top: 0;
-}
-
-body {
-  font-family: "Lora", serif;
-  line-height: 1.6;
-  font-size: 18px;
-  padding: 0 10px;
-  margin: 60px auto;
-  max-width: 700px;
 }
 
 h1,
