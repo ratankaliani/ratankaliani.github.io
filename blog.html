@@ -54,20 +54,20 @@
 <body>
     <header class="site-header">
         <div class="header-content">
-            <a href="index.html" style="text-decoration: none;">
+            <a href="/" style="text-decoration: none;">
                 <h3>Ratan Kaliani</h3>
             </a>
         </div>
         <nav class="header-nav">
-            <a href="index.html">About</a>
-            <a href="blog.html">Blog</a>
+            <a href="/">About</a>
+            <a href="/blog">Blog</a>
             <a href="https://curius.app/ratan-kaliani">Curiosities</a>
         </nav>
     </header>
 
     <main class="simple-container">
         <div id="post-list">
-            <a class="blog-link" href="posts/bulgaria.html">Travel Log: Bulgaria</a>
+            <a class="blog-link" href="posts/bulgaria">Travel Log: Bulgaria</a>
         </div>
         <div id="post-content" class="post-content" style="display: none;"></div>
     </main>
@@ -76,9 +76,33 @@
         // Function to load and render markdown posts
         async function loadPost(url) {
             try {
-                const response = await fetch(url);
+                // Always fetch the .md file regardless of URL display
+                const mdUrl = url + '.md';
+                const response = await fetch(mdUrl);
                 const markdown = await response.text();
-                const html = marked.parse(markdown);
+
+                // Configure marked to handle relative paths
+                const renderer = new marked.Renderer();
+                const baseUrl = '/';
+
+                // Fix relative links in markdown to use clean URLs
+                renderer.link = function (href, title, text) {
+                    if (href && !href.startsWith('http') && !href.startsWith('#')) {
+                        // Remove .html from internal links
+                        href = baseUrl + href.replace(/\.html$/, '');
+                    }
+                    return `<a href="${href}"${title ? ` title="${title}"` : ''}>${text}</a>`;
+                };
+
+                // Fix relative image paths
+                renderer.image = function (href, title, text) {
+                    if (href && !href.startsWith('http')) {
+                        href = baseUrl + href;
+                    }
+                    return `<img src="${href}" alt="${text}"${title ? ` title="${title}"` : ''}>`;
+                };
+
+                const html = marked.parse(markdown, { renderer });
 
                 document.getElementById('post-list').style.display = 'none';
                 const postContent = document.getElementById('post-content');
@@ -93,21 +117,20 @@
         document.querySelectorAll('.blog-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const postUrl = e.target.href.replace('.html', '.md');
-                loadPost(postUrl);
-                // Update URL without page reload
-                history.pushState({}, '', e.target.href);
+                const cleanUrl = e.target.href;
+                loadPost(cleanUrl);
+                history.pushState({}, '', cleanUrl);
             });
         });
 
         // Handle browser back/forward
         window.addEventListener('popstate', () => {
-            if (window.location.pathname === '/blog.html') {
+            const path = window.location.pathname;
+            if (path === '/blog' || path === '/') {
                 document.getElementById('post-list').style.display = 'block';
                 document.getElementById('post-content').style.display = 'none';
             } else {
-                const postUrl = window.location.pathname.replace('.html', '.md');
-                loadPost(postUrl);
+                loadPost(path);
             }
         });
     </script>
