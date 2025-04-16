@@ -330,3 +330,14 @@ code,
     /* Image takes full width */
   }
 }
+
+.header-content a {
+  color: inherit;
+}
+
+.header-content h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: #222;
+  font-weight: 700;
+}
