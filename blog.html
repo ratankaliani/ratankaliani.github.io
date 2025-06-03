@@ -68,6 +68,7 @@
     <main class="simple-container">
         <div id="post-list">
             <a class="blog-link" href="posts/bulgaria">Travel Log: Bulgaria</a>
+            <a class="blog-link" href="posts/evo2">Evo 2</a>
         </div>
         <div id="post-content" class="post-content" style="display: none;"></div>
     </main>
@@ -76,10 +77,17 @@
         // Function to load and render markdown posts
         async function loadPost(url) {
             try {
-                // Always fetch the .md file regardless of URL display
+                console.log('Loading post from URL:', url);
                 const mdUrl = url + '.md';
+                console.log('Fetching markdown from:', mdUrl);
                 const response = await fetch(mdUrl);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
                 const markdown = await response.text();
+                console.log('Markdown loaded successfully, length:', markdown.length);
 
                 // Configure marked to handle relative paths
                 const renderer = new marked.Renderer();
@@ -117,7 +125,8 @@
         document.querySelectorAll('.blog-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                const cleanUrl = e.target.href;
+                const url = new URL(e.target.href);
+                const cleanUrl = url.pathname; // Extract just the path: "/posts/evo2"
                 loadPost(cleanUrl);
                 history.pushState({}, '', cleanUrl);
             });
