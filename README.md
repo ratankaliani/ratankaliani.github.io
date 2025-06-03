@@ -11,3 +11,7 @@ brew install zola
 ```
 zola serve
 ```
+
+## TODO
+
+Add number of words and reading time to posts.
