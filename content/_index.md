@@ -11,7 +11,7 @@ footer = false
 name = "Ratan Kaliani"
 id = "ratankaliani"
 # bio = "dog person, killer"
-# avatar = "img/avatar.webp"
+avatar = "img/android-chrome-512x512.png"
 links = [
     { name = "GitHub", icon = "github", url = "https://github.com/ratankaliani" },
     { name = "Twitter", icon = "twitter", url = "https://twitter.com/ratankaliani" },

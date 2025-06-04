@@ -1,6 +1,6 @@
 +++
-title = "Evo 2"
-description = "Evo 2"
+title = "An Architectural Dive into Evo 2: Inside Arc’s Genomic Foundation Model"
+description = "An Architectural Dive into Evo 2: Inside Arc’s Genetic Foundation Model"
 date = 2025-06-03
 updated = 2025-06-03
 # draft = true
@@ -21,8 +21,6 @@ mermaid = false
 featured = false
 reaction = false
 +++
-
-# Introduction
 
 LLMs have put intelligence at our fingertips. From daily interactions with chatbots to generating Studio Ghibli portraits, every person can now leverage seemingly infinite intelligence with natural language. 
 
