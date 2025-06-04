@@ -30,11 +30,11 @@ LLMs have put intelligence at our fingertips. From daily interactions with chatb
 
 Imagine designing enzymes that break down waste, tweaking crops to grow in harsher climates, or exploring genetic modifications that make cells more resilient to disease. Today, synthetic biologists painstakingly design synthetic genomes manually, but what if you could design a genome in the same way that you prompt an LLM?
 
-Earlier this year, Arc Institute released Evo 2, a DNA foundation model trained on genomes across all domains of life from bacteria to animals to humans that aims to start the transition towards that world. In this post, I’ll attempt to explain the architecture behind Evo 2, what it’s useful for and the purpose of large genomic models fall is within biology.
+Earlier this year, Arc Institute released [Evo 2](https://arcinstitute.org/tools/evo), a DNA foundation model trained on genomes across all domains of life from bacteria to animals to humans that aims to start the transition towards that world. In this post, I’ll attempt to explain the architecture behind Evo 2, what it’s useful for and the purpose of large genomic models fall is within biology.
 
 Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. Genomic modeling is a *radically* different domain than language modeling. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, Evo 2’s constraints are quite specific to genomes.
 
-Evo 2 is a successor to Evo 1, which was the first large genomic language model released by Arc back in early 2024. Evo 1 showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo 1 only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 modifies both the training data set to include eukaryotic genomes and the architecture of Evo to work for the larger eukaryotic genomes.
+Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 modifies both the training data set to include eukaryotic genomes and the architecture of Evo to work for the larger eukaryotic genomes.
 
 Evo 2 was trained on over 2,000 H100 GPUs for several months, putting the estimated cost of the run at close to $10M, which is likely the largest training effort in biology. With Evo 2, you can:
 
@@ -43,15 +43,15 @@ Evo 2 was trained on over 2,000 H100 GPUs for several months, putting the esti
 - Handle up to 1 million base pairs of context when generating sequences.
 - Leverage mechanistic interpretability to reveal that Evo 2 “learned” many core biological features solely from raw genomic data.
 
-But how does Evo 2 *actually* work? Sure, with more data + compute, you expect large models to get better. But, what’s the *secret sauce*?
+But how does Evo 2 *actually* work? Sure, with larger dataset size, model size and compute, [you expect large models to get better](https://arxiv.org/abs/2001.08361). But, what’s the *secret sauce*?
 
 By the end of this post, if you have a basic grasp of biology and some familiarity with recent advances in machine learning, you’ll understand (1) why genomic sequence modeling can’t simply rely on off-the-shelf Transformers, (2) how Evo 2 can be practically useful in biological workflows and (3) why biology is such a fascinating domain to model on.
 
-# Background
+# Quick Primer
 
 To make sure that you don’t get overwhelmed by the breadth of biological knowledge in Evo 2 and spend several hours split-screening with o3 (like I did), I’ve distilled some basic biology concepts relevant for understanding Evo 2, that include both the data that Evo 2 is modeled on, and some terms for the tasks that Evo 2 is applied to.
 
-## Quick Bio Primer
+## Genome Modeling
 
 **Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. and I’ll refer to them as nucleotide or genomic sequences throughout the rest of the blog post.
 
@@ -63,13 +63,13 @@ To make sure that you don’t get overwhelmed by the breadth of biological knowl
 
 **Variant Pathogenicity:** How likely a genetic variant (usually an SNV) is to cause disease. Falls into 3 categories: pathogenic (causes disease), uncertain significance and benign.
 
-## Quick BioML Primer
+## BioML
 
 To contextualize Evo 2, it’s also important to understand the lineage of models that it follows. There are two main model lineages that are relevant to Evo 2, large protein language models, trained on protein sequences, and large genomics models, trained on genomic DNA sequences.
 
 [AlphaFold](https://alphafold.ebi.ac.uk/), one of the first large protein language models (PLMs) came out in 2020 and predicted protein structures. It clearly demonstrated how ML algorithms can “learn” biological structures better than humans for a laboratory relevant tasks. Then in 2021, [ESMFold](https://github.com/facebookresearch/esm) demonstrated how the transformer architecture could be applied to protein sequences to predict structural features purely from the embeddings of large-scale PLMs. 
 
-Around 2021, most genomics modeling was highly task-specific. Models such as [Enformer](https://deepmind.google/discover/blog/predicting-gene-expression-with-ai/) and [GenSLM](https://github.com/ramanathanlab/genslm) were used for epigenomic signals and microbial genome generation, but didn’t generalize well beyond their training set. In 2024, Evo 1 marked a similar transition to ESMFold, but for genomics data. Evo 1 was the first model to show that a long-context genomic sequence model trained on generic prokaryotic data could yield sequences with high prokaryotic sequence fitness *without any task-specific fine-tuning*. Evo 2 naturally followed Evo 1, but with architectural changes to perform well for eukaryotic data.
+Around 2021, most genomics modeling was highly task-specific. Models such as [Enformer](https://deepmind.google/discover/blog/predicting-gene-expression-with-ai/) and [GenSLM](https://github.com/ramanathanlab/genslm) were used for epigenomic signals and microbial genome generation, but didn’t generalize well beyond their training set. In 2024, Evo marked a similar transition to ESMFold, but for genomics data. Evo was the first model to show that a long-context genomic sequence model trained on generic prokaryotic data could yield sequences with high prokaryotic sequence fitness *without any task-specific fine-tuning*. Evo 2 naturally followed Evo, but with architectural changes to perform well for eukaryotic data.
 
 ![Evo 2 Model Size](/evo2/evo2_model_size_comp.png)
 
@@ -77,7 +77,7 @@ With that background, I’ll now focus on the **net-new** parts of the Evo 2 arc
 
 # How was Evo 2 trained?
 
-Evo 2 uses a Transformer-like architecture called a “multi-hybrid” architecture that extends the original Evo 1 architecture for better efficiency and longer context. I’ll go over what a “multi-hybrid” architecture is and the specific training recipe that Evo 2 used.
+Evo 2 uses a Transformer-like architecture called a “multi-hybrid” architecture that extends the original Evo architecture for better efficiency and longer context. I’ll go over what a “multi-hybrid” architecture is and the specific training recipe that Evo 2 used.
 
 ## Training Goals
 
@@ -91,7 +91,7 @@ Traditional transformers which are used for language modeling are not able to ef
 
 ## Evo 2’s Architecture: StripedHyena 2
 
-Before explaining Evo 2’s architecture Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), which was the architecture for Evo 1. *Yes, the naming is extremely confusing*!* 
+Before explaining Evo 2’s architecture Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), which was the architecture for Evo. *Yes, the naming is extremely confusing*!* 
 
 SH1 combines the Hyena state-space convolution with standard rotary-embedded self-attention layers. SH1 is similar to Mamba, except that SH1 fuses the convolutional operators and attention layers to push more computational efficiency and tighter coupling of local & global features. At a high level, Mamba’s simple sequential convolution → attention blocks can fit into existing Transformer pipelines, whereas SH1 requires custom fusion logic. Because SH1 is applied to genomic data, the tradeoff made more sense, as fusing together the attention and convolution blocks amortizes the overhead to reduce inference and training compute. 
 
