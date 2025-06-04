@@ -30,6 +30,8 @@ LLMs have put intelligence at our fingertips. From daily interactions with chatb
 
 Imagine designing enzymes that break down waste, tweaking crops to grow in harsher climates, or exploring genetic modifications that make cells more resilient to disease. Today, synthetic biologists painstakingly design synthetic genomes manually, but what if you could design a genome in the same way that you prompt an LLM?
 
+# Overview
+
 Earlier this year, Arc Institute released [Evo 2](https://arcinstitute.org/tools/evo), a DNA foundation model trained on genomes across all domains of life from bacteria to animals to humans that aims to start the transition towards that world. In this post, I’ll attempt to explain the architecture behind Evo 2, what it’s useful for and the purpose of large genomic models fall is within biology.
 
 Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. Genomic modeling is a *radically* different domain than language modeling. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, Evo 2’s constraints are quite specific to genomes.
@@ -75,11 +77,11 @@ Around 2021, most genomics modeling was highly task-specific. Models such as [En
 
 With that background, I’ll now focus on the **net-new** parts of the Evo 2 architecture and training data.
 
-# How was Evo 2 trained?
+# Training & Architecture
 
 Evo 2 uses a Transformer-like architecture called a “multi-hybrid” architecture that extends the original Evo architecture for better efficiency and longer context. I’ll go over what a “multi-hybrid” architecture is and the specific training recipe that Evo 2 used.
 
-## Training Goals
+## Motivations
 
 The motivations for Evo 2’s architecture are quite different than those for traditional language models.
 
@@ -89,7 +91,7 @@ The motivations for Evo 2’s architecture are quite different than those for tr
 
 Traditional transformers which are used for language modeling are not able to effectively handle 1M tokens of context with global long-range dependencies. Most LLMs (e.g. GPT-4, Claude3) max out at a 32K context window due to the $N^2$ FLOPs requirement for global attention. Methods of achieving longer-context with transformers such as local + periodic global attention still don’t reduce this compute budget requirement. So, out-of-the-box transformers **are simply not good enough yet** for modeling genomic sequences at the scale of millions of tokens.
 
-## Evo 2’s Architecture: StripedHyena 2
+## StripedHyena 2 Architecture
 
 Before explaining Evo 2’s architecture Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), which was the architecture for Evo. *Yes, the naming is extremely confusing*!* 
 
@@ -112,7 +114,7 @@ Below, you can see the scaling results for a dense transformer against SH1 and S
 
 More details on how the convolutional kernels are implemented + further results can be found in the [Evo 2 paper](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1) and the [sister ML paper](https://arcinstitute.org/manuscripts/Evo2-ML).
 
-## Training Recipe
+## Dataset
 
 Evo 2’s training data (called the OpenGenome2 atlas) comprises over 9T DNA base pairs spanning all domains of life (bacteria, archaea, eukarya). 
 
@@ -125,11 +127,11 @@ As seen in the charts below, the vast majority of FLOPS are applied in pre-train
 ![Evo 2 Training Tokens](/evo2/tokens_consumed_training.png)
 
 
-# Generating Genomic Sequences
+# Sequence Generation with Evo 2
 
 Evo 2 is fully auto-regressive, enabling sampling of “naturally-occurring” genomic sequences from an initial nucleotide sequence. In this section, I’ll cover how to use Evo 2 to perform zero-shot prediction of a genome based on an input, and iterated search towards a genome that satisfies an external heuristic.
 
-## Unconstrained Generation
+## Zero-Shot Novel Genomic Sequences
 
 The API for requesting a genomic sequence from Evo 2 is quite simple: pass the input and the number of additional tokens and the model will generate the corresponding nucleotides after the initial sequence.
 
@@ -143,7 +145,7 @@ Below, is a sample of how the Evo 2 model was used to generate a set of genomes 
 
 ![Diverse Genomes from Human Base](/evo2/diverse_genome.png)
 
-## Scaling Test-Time Compute in Genetic Language Models
+## Scaling Test-Time Compute
 
 Unlike traditional LLMs which can be prompted with additional language context to steer the output of generation, Evo 2 can only process nucleotide sequences as input. This is fine if you just want to get *a* nucleotide sequence which looks *reasonably* natural. But *what if you want to get one with specific characteristics -* say a sequence that’s more likely to bind to a protein target? Because Evo 2 only parses nucleotide sequences, once you’ve generated a genome, there’s no way to guide the model in a specific direction with natural language.
 
@@ -166,7 +168,7 @@ With this approach, the Evo 2 team was able to generate genomic sequences that e
 
 ![Chromatin accessibility](/evo2/chromatin_message.png)
 
-# Interpreting Evo 2
+# Evo 2 + Mechanistic Interpretability
 
 The Evo 2 team worked closely with Goodfire to train sparse auto-encoders (SAEs) on latest representations from Evo 2. SAEs trained on Evo 2 uncover several biologically relevant features, purely from nucleotide sequences:
 
@@ -176,7 +178,7 @@ The Evo 2 team worked closely with Goodfire to train sparse auto-encoders (SAEs)
 
 Although all of the identified features above from Evo 2 are biological features which are commonplace in literature, there *could* be learned representations of “unknown” biological features in scientific literature discovered by the mechanistic interpretability. If large models can learn “deeper representations” beyond what’s known in literature, just training a model and interpreting it could be enough to unlock new research.
 
-## Visualizing Evo 2 Mech Interp
+## Visualizing Evo 2's Features
 
 I really enjoyed playing around with Goodfire’s [mechanistic interpretability visualizer for Evo 2](https://arcinstitute.org/tools/evo/evo-mech-interp) because it concretizes what the utility of feature annotation is. The SAE trained by Goodfire can identify a semantic concepts in a nucleotide sequence you provide. Their interface shows activations on the supplied nucleotide sequence for several features in the model, such as features that fire for nucleotide sequences encoding proteins for α-helices and $\beta$-sheets.
 
@@ -186,7 +188,7 @@ Using AlphaFold3, you can model the 3D protein structure for a nucleotide sequen
 
 ![Annotated protein structure](/evo2/protein_structure_annotated.png)
 
-## Steering Genetic Sequences
+## Steering Genomic Generation
 
 Okay, so now we know how to do directed search for a specific heuristic function, but what if there isn’t a well-defined characteristic. What if just want to explore the space around a generated genomic sequence to see if we can get a sequence that fits our constraints.
 
@@ -199,7 +201,7 @@ The potential impact of steering Evo 2 is particularly significant: while langua
 
 In biology, there is no equivalent to prompt engineering as the model only understands nucleotide sequences. The decision space for guiding outputs is limited to directed search (beam search), training models to seek specific characteristics with rewards (RL) or steering. Of the three, **steering** is the only category that does not require test-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
 
-# Thoughts on Evo 2
+# My Thoughts on Evo 2
 
 Now that you have an understanding of Evo 2 and how to use it - **what can you use Evo 2 for today?** 
 
