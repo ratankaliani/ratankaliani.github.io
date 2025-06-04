@@ -6,8 +6,8 @@ updated = 2025-06-03
 # draft = true
 
 [taxonomies]
-categories = ["biotech"]
-tags = ["evo2"]
+categories = ["bio"]
+tags = ["bio", "ml"]
 
 [extra]
 lang = "en"
