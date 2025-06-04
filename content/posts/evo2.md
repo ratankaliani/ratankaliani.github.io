@@ -1,6 +1,6 @@
 +++
-title = "An Architectural Dive into Evo 2: Inside Arc’s Genomic Foundation Model"
-description = "An Architectural Dive into Evo 2: Inside Arc’s Genetic Foundation Model"
+title = "Deep Dive into Evo 2: Inside Arc’s DNA Foundation Model"
+description = "Deep Dive into Evo 2: Inside Arc’s DNA Foundation Model"
 date = 2025-06-03
 updated = 2025-06-03
 # draft = true
@@ -21,6 +21,8 @@ mermaid = false
 featured = false
 reaction = false
 +++
+
+![Evo 2 Cover](/evo2/cover.png)
 
 LLMs have put intelligence at our fingertips. From daily interactions with chatbots to generating Studio Ghibli portraits, every person can now leverage seemingly infinite intelligence with natural language. 
 
@@ -69,6 +71,8 @@ To contextualize Evo 2, it’s also important to understand the lineage of model
 
 Around 2021, most genomics modeling was highly task-specific. Models such as [Enformer](https://deepmind.google/discover/blog/predicting-gene-expression-with-ai/) and [GenSLM](https://github.com/ramanathanlab/genslm) were used for epigenomic signals and microbial genome generation, but didn’t generalize well beyond their training set. In 2024, Evo 1 marked a similar transition to ESMFold, but for genomics data. Evo 1 was the first model to show that a long-context genomic sequence model trained on generic prokaryotic data could yield sequences with high prokaryotic sequence fitness *without any task-specific fine-tuning*. Evo 2 naturally followed Evo 1, but with architectural changes to perform well for eukaryotic data.
 
+![Evo 2 Model Size](/evo2/evo2_model_size.png)
+
 With that background, I’ll now focus on the **net-new** parts of the Evo 2 architecture and training data.
 
 # How was Evo 2 trained?
@@ -99,9 +103,12 @@ Where Evo 2’s SH2 architecture shines compared to SH1 is in the use of multipl
 
 As described in the paper, *Hyena-MR is to Hyena-LI what sliding window attention is to the classic attention operator*. By leveraging more efficient convolutional operators for short, local recall, SH2 gets a 2x-3x speedup in training over SH1. You only pay for long-range context occasionally, rather than in each layer.
 
+![Evo 2 Architecture](/evo2/evo1_evo2_architecture.png)
 *Sourced from the Evo2 paper.*
 
 Below, you can see the scaling results for a dense transformer against SH1 and SH2. At longer contexts, you can clearly see that the Hyena-SE and Hyena-MR convolutional kernels out-perform MHA (multi-head attention) as expected. After all, you’re no longer paying the quadratic overhead of attention. The use of Hyena-SE and Hyena-MR kernels increases training and inference throughput.
+
+![Evo 2 Scaling](/evo2/training_speedup_vs_transformer.png)
 
 More details on how the convolutional kernels are implemented + further results can be found in the [Evo 2 paper](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1) and the [sister ML paper](https://arcinstitute.org/manuscripts/Evo2-ML).
 
@@ -112,6 +119,9 @@ Evo 2’s training data (called the OpenGenome2 atlas) comprises over ****9T D
 To capture both local functional elements and long‑range genomic dependencies, two training phases were employed: an initial “short‑context” pretraining on 8,192‑bp windows enriched for genic regions, followed by a “midtraining” stage that extended context to 1M ****base pairs, with sequence composition shifted toward whole‑genome samples. By combining these two training phases, Evo 2 achieves single‑nucleotide resolution and the diversity needed to generalize across everything from mitochondrial micro‑genomes to complex eukaryotic chromosomes.
 
 As seen in the charts below, the vast majority of FLOPS are applied in pre-training. From pre-training the model gathers knowledge about biological structure, and mid-training extends this structure from just eukaryotic genes to genomic sequences from the genome data bank.
+
+![Evo 2 Training Tokens](/evo2/tokens_consumed_training.png) ![Evo 2 Training Composition](/evo2/training_composition_mix.png)
+
 
 # Generating Genomic Sequences
 
