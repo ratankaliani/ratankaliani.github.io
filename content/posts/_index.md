@@ -11,7 +11,7 @@ generate_feeds = true
 lang = "en"
 
 title = "Posts"
-subtitle = "Hi, I'm Ratan! I enjoy thinking about the world and my place in it."
+subtitle = ""
 
 date_format = "%b %-d, %Y"
 

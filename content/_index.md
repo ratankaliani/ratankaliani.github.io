@@ -26,10 +26,10 @@ recent_more_text = "more »"
 date_format = "%b %-d, %Y"
 +++
 
-Hi, I'm Ratan. I am interested in programmable cryptography, systems, economic infrastructure and progress.
+Hi, I'm Ratan.
 
 Previously, I was a founding engineer at [Succinct](https://succinct.xyz). Before that, I built and researched core crypto infrastructure at [Coinbase](https://coinbase.com) and [Polychain Capital](https://polychain.capital). I studied electrical engineering and computer science at Berkeley. While there, I led [Blockchain at Berkeley](https://blockchain.berkeley.edu) and directed Berkeley's [blockchain startup accelerator](https://xcelerator.berkeley.edu). I was involved in [Accel Scholars](https://eecs.berkeley.edu/resources/undergrads/accel/) and the [Paradigm](https://paradigm.xyz) Fellowship.
 
 I enjoy reading, urban design, basketball, Catan and poker. I'm a believer that long walks lead to great ideas. Especially in San Francisco.
 
-I enjoy making new friends - feel free to reach out email me via email if you'd like to chat, or message me on [Twitter](https://twitter.com/ratankaliani).
+I love making new friends - feel free to reach out email me via email if you'd like to chat, or message me on [Twitter](https://twitter.com/ratankaliani).

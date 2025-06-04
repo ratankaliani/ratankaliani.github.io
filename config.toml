@@ -18,6 +18,9 @@ generate_feeds = false # Whether to generate a feed file in root, read docs for 
 feed_filenames = ["feed.xml"] # "feed.xml" | "atom.xml" | "rss.xml", read docs for more info
 taxonomies = [{ name = "tags" }, { name = "categories" }]
 
+# Optional: Customize reading time calculation (default is 200 words per minute)
+# reading_speed = 250  # words per minute
+
 [markdown]
 highlight_code = true
 highlight_theme = "css"

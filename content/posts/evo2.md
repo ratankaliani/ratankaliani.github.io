@@ -24,11 +24,9 @@ reaction = false
 
 ![Evo 2 Cover](/evo2/cover.png)
 
-LLMs have put intelligence at our fingertips. From daily interactions with chatbots to generating Studio Ghibli portraits, every person can now leverage seemingly infinite intelligence with natural language. 
+***What if designing new life was as easy as using ChatGPT?***
 
-***What if designing new life was just as easy?***
-
-Imagine designing enzymes that break down waste, tweaking crops to grow in harsher climates, or exploring genetic modifications that make cells more resilient to disease. Today, synthetic biologists painstakingly design synthetic genomes manually, but what if you could design a genome in the same way that you prompt an LLM?
+Imagine designing enzymes that break down waste, tweaking crops to grow in harsher climates, or exploring genetic modifications that make cells more resilient to disease. For the last 25 years, synthetic biologists have painstakingly designed genomes manually, but what if the barrier to creating a novel genome dropped to 0?
 
 # Overview
 
