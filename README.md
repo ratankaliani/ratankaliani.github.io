@@ -14,4 +14,4 @@ zola serve
 
 ## TODO
 
-Add number of words and reading time to posts.
+[ ] Add word count + reading time. Blocked by https://github.com/isunjn/serene/pull/81. Update submodule to pull in changes and update config.
