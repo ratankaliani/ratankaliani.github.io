@@ -20,6 +20,7 @@ back_to_top = true # show back-to-top button
 toc = true # show table-of-contents
 comment = false # enable comment
 copy = true # show copy button in code block
+stats = true
 
 outdate_alert = false
 outdate_alert_days = 12
