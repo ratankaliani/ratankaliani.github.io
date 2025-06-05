@@ -14,4 +14,4 @@ zola serve
 
 ## TODO
 
-[ ] Add word count + reading time. Blocked by https://github.com/isunjn/serene/pull/81. Update submodule to pull in changes and update config.
+[ ] Switch back to upstream after https://github.com/isunjn/serene/pull/81 is merged.
