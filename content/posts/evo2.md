@@ -27,13 +27,13 @@ Over the past few decades, synthetic biologists have dreamed of programming cell
 
 Over the past few days, I got curious about Evo 2, initially because of the application of a non-Transformer architecture and the nuances of modeling on genomic data. Quickly, I found myself diving through Wikipedia and Deep Research reports to understand the biological concepts and the technical details of Evo 2. This post is a distillation of my understanding of Evo 2, which I hope will be useful to anyone interested in learning more about the intersection of LLMs and biology.
 
-My goal is by the end you'll understand (1) why genomic sequence modeling can't simply rely on off-the-shelf Transformers, (2) how Evo 2 can be useful in today's biological workflows and (3) how Evo 2 and similar genomic foundation models may evolve in the future.
+By the end of this post, my goal is for you to understand (1) why genomic sequence modeling can't simply rely on off-the-shelf Transformers, (2) how Evo 2 can be useful in today's biological workflows and (3) how Evo 2 and similar genomic foundation models may evolve in the future.
 
 # Overview
 
 ![Evo 2 Cover](/evo2/cover.png)
 
-Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. Genomic modeling is different domain than language modeling. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, Evo 2’s constraints are quite specific to genomes.
+Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, modeling genomic sequences is quite different than natural language.
 
 Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 modifies both the training data set to include eukaryotic genomes and the architecture of Evo to work for the larger eukaryotic genomes.
 
@@ -53,7 +53,7 @@ To make sure that you don’t get overwhelmed by the breadth of biological knowl
 
 ## Genome Modeling
 
-**Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. and I’ll refer to them as nucleotide or genomic sequences throughout the rest of the blog post.
+**Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. and I’ll refer to them as nucleotide or genomic sequences throughout the rest of the post.
 
 **DNA → RNA → Protein:** Evo 2 explicitly models DNA sequences and RNA sequences because it’s pre-trained on them. *But how does it model protein sequences?* DNA and RNA contain the instructions for protein synthesis, so Evo 2 can learn statistical and structural features of DNA/RNA that implicitly encode proteins. Evo 2 learns which RNA transcripts are likely to be stable, expressed and translated into functional proteins. When I cover mechanistic interpretability with Evo 2, I’ll show specifically how it has internalized these features. This is known as the “[central dogma](https://en.wikipedia.org/wiki/Central_dogma_of_molecular_biology)”, with the caveat that RNA does more than just implicitly encode proteins ([obligatory XKCD #3056](https://xkcd.com/3056/)).
 
@@ -67,7 +67,7 @@ To make sure that you don’t get overwhelmed by the breadth of biological knowl
 
 To contextualize Evo 2, it’s also important to understand the lineage of models that it follows. There are two main model lineages that are relevant to Evo 2, large protein language models, trained on protein sequences, and large genomics models, trained on genomic DNA sequences.
 
-[AlphaFold](https://alphafold.ebi.ac.uk/), one of the first large protein language models (PLMs) came out in 2020 and predicted protein structures. It clearly demonstrated how ML algorithms can “learn” biological structures better than humans for a laboratory relevant tasks. Then in 2021, [ESMFold](https://github.com/facebookresearch/esm) demonstrated how the transformer architecture could be applied to protein sequences to predict structural features purely from the embeddings of large-scale PLMs. 
+[AlphaFold](https://alphafold.ebi.ac.uk/), one of the first large protein language models (PLMs) came out in 2020 and predicted protein structures. It clearly demonstrated how ML algorithms can “learn” biological structures better than humans forlaboratory relevant tasks. Then in 2021, [ESMFold](https://github.com/facebookresearch/esm) demonstrated how the transformer architecture could be applied to protein sequences to predict structural features purely from the embeddings of large-scale PLMs. 
 
 Around 2021, most genomics modeling was highly task-specific. Models such as [Enformer](https://deepmind.google/discover/blog/predicting-gene-expression-with-ai/) and [GenSLM](https://github.com/ramanathanlab/genslm) were used for epigenomic signals and microbial genome generation, but didn’t generalize well beyond their training set. In 2024, Evo marked a similar transition to ESMFold, but for genomics data. Evo was the first model to show that a long-context genomic sequence model trained on generic prokaryotic data could yield sequences with high prokaryotic sequence fitness *without any task-specific fine-tuning*. Evo 2 naturally followed Evo, but with architectural changes to perform well for eukaryotic data.
 
@@ -158,7 +158,7 @@ As you can see, the generated sequences are quite diverse, and have some measure
 
 Unlike traditional LLMs which can be prompted with additional language context to steer the output of generation, Evo 2 can only process nucleotide sequences as input. Once you’ve generated a genome, there’s no way to guide the model in a specific direction with natural language.
 
-So, how do you do you do directed search for nucleotide sequences that have specific conditions beyond “natural viability” at inference-time?
+So, how do you do directed search for nucleotide sequences that have specific conditions beyond “natural viability” at inference-time?
 
 For this, we can look to modern ML, where scaling inference-time compute has been [widely](https://arxiv.org/pdf/2501.12948) [adopted](https://openai.com/o1/) over the past year. At a high level, techniques for [scaling inference-time compute](https://huggingface.co/spaces/HuggingFaceH4/blogpost-scaling-test-time-compute) can be broadly categorized into **self-refinement** and **searching against a verifier**. 
 
@@ -219,7 +219,7 @@ Even without such a tool, we can still visualize the features that Evo 2 has lea
 
 Goodfire’s [mechanistic interpretability visualizer for Evo 2](https://arcinstitute.org/tools/evo/evo-mech-interp) annotates feature activations on nucleotide sequences. 
 
-In the image below, you can see the feature activations for the `Haemophilus influenzae` genome (the common cause of many infections). At different levels of granularity, you can see the activations for α-helices and β-sheets, as well as those as the RNA-level, such as ribosomal RNA.
+In the image below, you can see the feature activations for the `Haemophilus influenzae` genome (the common cause of many infections). At different levels of granularity, you can see the activations for α-helices and β-sheets, as well as those at the RNA-level, such as ribosomal RNA.
 
 ![Mechanistic Interpretability Visualizer](/evo2/mech_interp_visualizer.png)
 
@@ -233,14 +233,12 @@ Although all of the identified features above from Evo 2 are biological features
 
 At this point, you've learned about the architecture behind Evo 2, how it can be used to generate novel genomic sequences and how Evo 2 could identify features in the latent space of DNA. What I haven't discussed is the future of Evo 2 and where biologists will use the model.
 
-To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessment that:
+To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessment:
 - Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, and not on any real-world biological experiments.
-- High-fidelity genome generation at scale is **only possible** with large models such as Evo 2, rather than humans, but the utility today is bottlenecked by DNA synthesis costs.
+- High-fidelity genome generation at scale is only possible with large models such as Evo 2, rather than humans, but the utility today is bottlenecked by DNA synthesis costs.
 
-LLMs today are useful for real-world tasks because reward model(s) for “language” *can already be approximated at a reasonable cost*. You can see this with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signal from biological systems is difficult because you need to run experiments *over days or weeks at a time*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to loop in high-throughput biological systems! To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
+LLMs today are useful for real-world tasks because reward models for language can already be approximated at a reasonable cost. This has been shown with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signals from biological systems is difficult because you need to run experiments *over days or weeks*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to loop in high-throughput biological systems! To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
 
-Though Evo 2 is a step in the right direction towards an ["App Store for Biology"](https://www.sequoiacap.com/podcast/training-data-patrick-hsu/), the real bottlenecks in applying these models are not in the model architectures themselves, but in the challenges of real-world biological validation. Unlike software, where closed-loop feedback and rapid iteration are possible, biological research is constrained by the cost and complexity of experiments and data collection. Progress with Evo 2 and other models will depend as much on building better experimental and data infrastructure as on advances in model design. 
-
-I'm excited to see initiatives such as the [Virtual Cell Atlas](https://arcinstitute.org/news/news/arc-virtual-cell-atlas-launch) which are a step in the right direction, but for now, real-world biological validation will be necessary to make these models useful.
+Though Evo 2 is a step in the right direction towards an ["App Store for Biology"](https://www.sequoiacap.com/podcast/training-data-patrick-hsu/), the real bottlenecks in applying these models are not in the model architectures themselves, but in the challenges of real-world biological validation. Unlike software, where closed-loop feedback and rapid iteration are possible, biological research is constrained by the cost and complexity of experiments and data collection. Progress with Evo 2 and other models will depend as much on building better experimental and data infrastructure as on advances in model design.
 
 *Thanks to [Chris Zou](https://x.com/chriswzou) and [Darya Kaviani](https://x.com/daryakaviani) for their feedback & support on this post! I appreciated Asimov's [post on Evo 2](https://www.asimov.press/p/evo-2) and owlposting's [socratic dialogues](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility), which were both an inspiration for this post.*
