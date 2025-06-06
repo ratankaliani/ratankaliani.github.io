@@ -53,7 +53,7 @@ To make sure that you don’t get overwhelmed by the breadth of biological knowl
 
 ## Genome Modeling
 
-**Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. and I’ll refer to them as nucleotide or genomic sequences throughout the rest of the post.
+**Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. I’ll refer to them as nucleotide or genomic sequences throughout the rest of the post.
 
 **DNA → RNA → Protein:** Evo 2 explicitly models DNA sequences and RNA sequences because it’s pre-trained on them. *But how does it model protein sequences?* DNA and RNA contain the instructions for protein synthesis, so Evo 2 can learn statistical and structural features of DNA/RNA that implicitly encode proteins. Evo 2 learns which RNA transcripts are likely to be stable, expressed and translated into functional proteins. When I cover mechanistic interpretability with Evo 2, I’ll show specifically how it has internalized these features. This is known as the “[central dogma](https://en.wikipedia.org/wiki/Central_dogma_of_molecular_biology)”, with the caveat that RNA does more than just implicitly encode proteins ([obligatory XKCD #3056](https://xkcd.com/3056/)).
 
@@ -93,7 +93,7 @@ Methods of achieving longer-context with transformers such as local + periodic g
 
 ## StripedHyena 2 Architecture
 
-Before explaining Evo 2’s architecture Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), the architecture for Evo.
+Before explaining Evo 2’s architecture, Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), the architecture for Evo.
 
 SH1 combines the [Hyena state-space convolution](https://arxiv.org/abs/2302.10866) with self-attention layers. SH1 is similar to [Mamba](https://arxiv.org/abs/2312.00752), except that SH1 fuses the convolutional operators and attention layers to push more computational efficiency and tighter coupling of local & global features. At a high level, Mamba’s simple sequential convolution → attention blocks can fit into existing Transformer pipelines, whereas SH1 requires custom fusion logic. Because SH1 is applied to genomic data, where the context length is much longer than in language modeling, this tradeoff makes more sense. Fusing together the attention and convolution blocks amortizes the overhead to reduce inference and training compute, which yields 2x speedup over dense transformers. 
 
@@ -132,7 +132,7 @@ As seen in the charts below, the vast majority of FLOPS are applied in pre-train
 
 ![Evo 2 Training Tokens](/evo2/tokens_consumed_training.png)
 
-Now that you have a basic understanding of the training data and architecture of Evo 2, let's dive into how to use Evo 2 to generate novel genomic sequences!
+Now that you have a basic understanding of the training data and architecture of Evo 2, let's dive into how to use Evo 2 to generate novel genomic sequences.
 
 # Sequence Generation with Evo 2
 
@@ -146,7 +146,7 @@ The API for requesting a genomic sequence from Evo 2 is quite simple: pass the i
 dna_seq = evo2_model.sample(prompt="ATGCTG", ..., number_of_tokens=1000)
 ```
 
-To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human seed. While there were no wet-lab experiments employed to validate the generated nucleotide sequences, the Evo 2 team employs computational methods to assess that the generated sequences are “similar” and contain the critical components for mitochondrial DNA. Specifically, they deploy [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis to verify sequence homology of the generated sequence against different naturally occurring organisms and [AlphaFold 3](https://alphafold.ebi.ac.uk/) to validate the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the raw “sequence” and the proteins that it encodes are “viable”. 
+To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human seed. While there were no wet-lab experiments to validate the generated sequences, the Evo 2 team uses computational methods to assess their similarity to natural sequences and verify they contain critical mitochondrial DNA components. Specifically, they deploy [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis to verify sequence homology of the generated sequence against different naturally occurring organisms and [AlphaFold 3](https://alphafold.ebi.ac.uk/) to validate the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the raw “sequence” and the proteins that it encodes are “viable”. 
 
 Below, is a sample of how the Evo 2 model was used to generate a set of genomes from a small human mitochondrial DNA seed. The created genomes ranged from being most similar to a sheep or a fish, all from the same seed.
 
@@ -174,7 +174,7 @@ Evo 2 uses Enformer and Borzoi as heuristic functions for evaluating a generated
 
 1. Sample N times (fan-out) from Evo 2 given the same prompt.
 2. Score the N samples with Enformer and Borzoi.
-3. Select the top K chunks based on the and append to the prompt.
+3. Select the top K chunks based on the scores and append to the prompt.
 4. Repeat until you’ve generated a nucleotide sequence of length L.
 
 With this approach, the Evo 2 team was able to generate genomic sequences that encode chromatin accessibility patterns that match the Morse code encoding of “Evo 2” and “ARC”. You can see these encoded in the chromatin accessibility diagrams below.
@@ -227,15 +227,15 @@ Using AlphaFold3, you can model the 3D protein structure for a nucleotide sequen
 
 ![Annotated protein structure](/evo2/protein_structure_annotated.png)
 
-Although all of the identified features above from Evo 2 are biological features which are commonplace in literature, there *could* be learned representations of “unknown” biological features in scientific literature discovered by the mechanistic interpretability. If large models can learn “deeper representations” beyond what’s known in literature, just training a model and interpreting it could be enough to unlock new research.
+Although all of the identified features above from Evo 2 are biological features which are commonplace in literature, there *could* be learned representations of “unknown” biological features in scientific literature discovered by the mechanistic interpretability. If large models can learn “deeper representations” beyond what’s known in literature, simply training a model and interpreting it could be enough to unlock new research.
 
 # Takeaways
 
 At this point, you've learned about the architecture behind Evo 2, how it can be used to generate novel genomic sequences and how Evo 2 could identify features in the latent space of DNA. What I haven't discussed is the future of Evo 2 and where biologists will use the model.
 
 To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessment:
-- Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, and not on any real-world biological experiments.
-- High-fidelity genome generation at scale is only possible with large models such as Evo 2, rather than humans, but the utility today is bottlenecked by DNA synthesis costs.
+- Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, not on any real-world biological experiments.
+- High-fidelity genome generation at scale is only possible with large models such as Evo 2, not through manual human design. But, the utility today is bottlenecked by DNA synthesis costs.
 
 LLMs today are useful for real-world tasks because reward models for language can already be approximated at a reasonable cost. This has been shown with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signals from biological systems is difficult because you need to run experiments *over days or weeks*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to loop in high-throughput biological systems! To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
 
