@@ -21,7 +21,7 @@ featured = false
 reaction = false
 +++
 
-In February, [Arc Institute](https://arcinstitute.org/) released [Evo 2](https://arcinstitute.org/tools/evo), a DNA foundation model trained on genomes from all domains of life. According to Arc, this represents the largest training effort in computational biology to date, with novel architectural advances to handle genomic sequences.
+In February, [Arc Institute](https://arcinstitute.org/) released [Evo 2](https://arcinstitute.org/tools/evo), a DNA foundation model trained on genomes from all domains of life. [According to Arc](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1), this represents the largest training effort in computational biology to date, with novel architectural advances to handle genomic sequences.
 
 Over the past few decades, synthetic biologists have dreamed of programming cells as easily as we program computers: creating bacteria that clean up pollution, crops that thrive in extreme environments, or therapies that target disease at the genetic level. Traditionally, this has required painstaking manual design and years of trial and error. Evo 2 represents a potential leap forward: what if we could generate entirely new genomes [in silico](https://en.wikipedia.org/wiki/In_silico), rapidly and at scale?
 
@@ -33,11 +33,11 @@ By the end of this post, my goal is for you to understand (1) why genomic sequen
 
 ![Evo 2 Cover](/evo2/cover.png)
 
-Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, modeling genomic sequences is quite different from natural language.
+Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. From a low-entropy vocabulary to long-range dependencies between tokens >1M tokens apart, modeling genomic sequences is quite different from natural language.
 
-Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 modifies both the training data set to include eukaryotic genomes and the architecture of Evo to work for the larger eukaryotic genomes.
+Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 also trained on eukaryotic genomes and modified the architecture of Evo to work for the larger genomes in eukaryotes.
 
-Evo 2, according to Arc, was trained on over 2,000 H100 GPUs for several months, putting the estimated cost of the run at ~$10M. With Evo 2, you can:
+Evo 2 was trained on over 2,000 H100 GPUs for several months, putting my estimate of the cost of the run at ~$10M. With Evo 2, you can:
 
 - Generate novel genetic sequences across both eukaryotes and prokaryotes that exhibit high fitness.
 - Predict the functional impact of specific genetic variants, such as BRCA1 mutations linked to increased breast cancer risk.
@@ -45,23 +45,33 @@ Evo 2, according to Arc, was trained on over 2,000 H100 GPUs for several month
 - Handle up to 1 million base pairs of context when generating sequences.
 - Leverage mechanistic interpretability to see what Evo 2 “learned” from raw genomic data.
 
-These capabilities are impressive, but how does Evo 2 *really* work? Sure, by increasing the dataset size, model size or compute, [you expect language models to get better](https://arxiv.org/abs/2001.08361). What makes Evo 2 specifically suited for genomics?
+On paper, Evo 2's capabilities are impressive, but I want to know how Evo 2 *really* works. Sure, by increasing the dataset size, model size or compute, [you expect language models to get better](https://arxiv.org/abs/2001.08361). What makes Evo 2 so performant at genomic modeling?
 
 # Quick Primer
 
-To make sure that you don’t get overwhelmed by the breadth of biological knowledge in Evo 2 and spend several hours asking questions to your favorite reasoning model, I’ve distilled some basic biology concepts relevant for understanding Evo 2. These include both the data that Evo 2 is modeled on, and some terms for the tasks that Evo 2 is applied to. If you're already familiar with these concepts, feel free to skip to the [Training & Architecture](#training-architecture) section.
+To make sure that you don’t get overwhelmed by the breadth of biological knowledge to understand Evo 2 and spend several hours asking questions to your favorite reasoning model, I’ve distilled some basic biology concepts relevant for understanding Evo 2 here. These include both the data that Evo 2 is modeled on, and some terms for the tasks that Evo 2 is applied to. If you're already familiar with these concepts, feel free to skip to the [Training & Architecture](#training-architecture) section.
 
 ## Genome Modeling
 
-**Nucleotide Sequences**: Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. I’ll refer to them as nucleotide or genomic sequences throughout the rest of the post.
+### Nucleotide Sequences
 
-**DNA → RNA → Protein:** Evo 2 explicitly models DNA sequences and RNA sequences because it’s pre-trained on them. *But how does it model protein sequences?* DNA and RNA contain the instructions for protein synthesis, so Evo 2 can learn statistical and structural features of DNA/RNA that implicitly encode proteins. Evo 2 learns which RNA transcripts are likely to be stable, expressed and translated into functional proteins. When I cover mechanistic interpretability with Evo 2, I’ll show specifically how it has internalized these features. This is known as the “[central dogma](https://en.wikipedia.org/wiki/Central_dogma_of_molecular_biology)”, with the caveat that RNA does more than just implicitly encode proteins ([obligatory XKCD #3056](https://xkcd.com/3056/)).
+Evo 2 models DNA sequences. These linear sequences are composed of nucleotides that encode genetic information: adenine (A), guanine (G), cytosine (C), and thymine (T). According to the paper, Evo 2 also pre-trains on RNA sequences, and RNA sequences use Uracil (U) instead of Thymine (T). In DNA, this is abbreviated as “AGCT”, and in “RNA” as “AUCG”. I’ll refer to them as nucleotide or genomic sequences throughout the rest of the post.
 
-**Variant-Effect Prediction:** Computational bridge from raw mutation to clinical decision, based on a genetic mutation you can determine if a specific condition is more likely.
+### DNA → RNA → Protein
 
-**SNVs:** Single nucleotide variant - a change in a single base in the genome sequence. Most are benign and some are harmful.
+Evo 2 explicitly models DNA sequences and RNA sequences because it’s pre-trained on them. *But how does it model protein sequences?* DNA and RNA contain the instructions for protein synthesis, so Evo 2 can learn statistical and structural features of DNA/RNA that implicitly encode proteins. Evo 2 learns which RNA transcripts are likely to be stable, expressed and translated into functional proteins. When I cover mechanistic interpretability with Evo 2, I’ll show specifically how it has internalized these features. This is known as the “[central dogma](https://en.wikipedia.org/wiki/Central_dogma_of_molecular_biology)”, with the caveat that RNA does more than just implicitly encode proteins ([obligatory XKCD #3056](https://xkcd.com/3056/)).
 
-**Variant Pathogenicity:** How likely a genetic variant (usually an SNV) is to cause disease. Falls into 3 categories: pathogenic (causes disease), uncertain significance and benign.
+### Variant-Effect Prediction
+
+Computational bridge from raw mutation to clinical decision, based on a genetic mutation you can determine if a specific condition is more likely.
+
+### SNVs
+
+Single nucleotide variant - a change in a single base in the genome sequence. Most are benign and some are harmful.
+
+### Variant Pathogenicity
+
+How likely a genetic variant (usually an SNV) is to cause disease. Falls into 3 categories: pathogenic (causes disease), uncertain significance and benign.
 
 ## BioML
 
@@ -87,15 +97,15 @@ The motivations for Evo 2’s architecture are quite different than those for tr
 2. The vocabulary size for Evo 2 is O(10), with most tokens concentrated in the nucleotides for DNA, AGCT, and RNA, AGCU. This is drastically smaller than the vocabulary size in [modern LLMs, which are typically between 10K to 100K tokens](https://github.com/openai/tiktoken).
 3. Single-nucleotide resolution is critical. To make clinically relevant predictions for SNV’s (among other targets), you need to know exactly which nucleotide changes. Increasing the size of the vocabulary to reduce the context length is a patchwork solution and is untenable for this reason.
 
-Traditional transformers that are used for language modeling are not able to effectively handle 1M tokens of context with global long-range dependencies. Most LLMs (e.g. GPT-4, Claude4) max out at a 200K context window due to the [quadratic compute requirement for attention](https://arxiv.org/pdf/2307.08691). 
+Traditional transformers that are used for language modeling are not able to effectively handle 1M tokens of context with global long-range dependencies. Most LLMs (e.g. [GPT-4o](https://help.openai.com/en/articles/7102672-how-can-i-access-gpt-4o-and-gpt-4-1-mini), [Claude4](https://www.anthropic.com/claude/sonnet)) max out at a 200K context window due to the [quadratic compute requirement for attention](https://arxiv.org/pdf/2307.08691).
 
-Methods of achieving longer-context with transformers such as local + periodic global attention still don’t reduce this compute budget requirement. So, out-of-the-box transformers will be quite expensive for modeling genomic sequences at the scale of millions of tokens.
+Methods of achieving longer-context with transformers such as local + periodic global attention still don’t reduce this compute budget requirement. So, out-of-the-box transformers will be quite expensive for modeling genomic sequences at the scale of millions of tokens. Can we use convolutional operators to do better, while retaining the benefits of transformers?
 
 ## StripedHyena 2 Architecture
 
-Before explaining Evo 2’s architecture, Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), the architecture for Evo.
+Before explaining Evo 2’s architecture, Striped Hyena 2 (SH2), I’ll explain Striped Hyena 1 (SH1), the architecture for Evo. Striped Hyena is a part of a family of architectures that use convolutional operators to model long-range dependencies in combination with attention.
 
-SH1 combines the [Hyena state-space convolution](https://arxiv.org/abs/2302.10866) with self-attention layers. SH1 is similar to [Mamba](https://arxiv.org/abs/2312.00752), except that SH1 fuses the convolutional operators and attention layers to push more computational efficiency and tighter coupling of local & global features. At a high level, Mamba’s simple sequential convolution → attention blocks can fit into existing Transformer pipelines, whereas SH1 requires custom fusion logic. Because SH1 is applied to genomic data, where the context length is much longer than in language modeling, this tradeoff makes more sense. Fusing together the attention and convolution blocks amortizes the overhead to reduce inference and training compute, which yields 2x speedup over dense transformers. 
+Speficially, SH1 combines the [Hyena state-space convolution](https://arxiv.org/abs/2302.10866) with self-attention layers. SH1 is similar to [Mamba](https://arxiv.org/abs/2312.00752), except that SH1 fuses the convolutional operators and attention layers to push more computational efficiency and tighter coupling of local & global features. Mamba’s simple sequential convolution → attention blocks can fit into existing Transformer pipelines, whereas SH1 requires custom fusion logic. Because SH1 is applied to genomic data, where the context length is much longer than in language modeling, this tradeoff makes more sense. Fusing together the attention and convolution blocks amortizes the overhead to reduce inference and training compute, which yields 2x speedup over dense transformers. 
 
 Mamba and SH1 are known as “hybrid” architectures because they combine two key components: attention and state-space convolutions.
 
@@ -106,7 +116,7 @@ A major advantage of SH2 over SH1 is its use of multiple convolutional layers, r
 - **Hyena-MR (Medium Regularized filters):** Handles dependencies over several hundred tokens, maintaining efficiency and performance.
 - **Hyena-LI (Long Implicit filters):** Captures long-range dependencies across the sequence.
 
-The paper draws a nice parallel between the new convolutional operators and the classic attention operator.
+The [ML paper for Evo 2](https://arcinstitute.org/manuscripts/Evo2-ML) draws a nice parallel between the new convolutional operators and the classic attention operator.
 
 > Hyena-MR is to Hyena-LI what sliding window attention is to the classic attention operator. 
 
@@ -114,11 +124,13 @@ By leveraging more efficient convolutional operators for short, local recall, SH
 
 ![Evo 2 Architecture](/evo2/evo1_evo2_architecture.png)
 
-Below, you can see the scaling results for a dense transformer against SH1 and SH2. At longer contexts, you can clearly see that the Hyena-SE and Hyena-MR convolutional kernels out-perform MHA (multi-head attention) as you’re no longer paying the quadratic overhead of attention. The use of Hyena-SE and Hyena-MR kernels increases training and inference throughput!
+Below, you can see the scaling results for a dense transformer against SH1 and SH2. At longer contexts, you can clearly see that the Hyena-SE and Hyena-MR convolutional kernels out-perform MHA (multi-head attention) as you’re no longer paying the quadratic overhead of attention. The use of Hyena-SE and Hyena-MR kernels increases training and inference throughput.
 
 ![Evo 2 Scaling](/evo2/training_speedup_vs_transformer.png)
 
 More details on how the convolutional kernels are implemented + further results can be found in the [Evo 2 paper](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1) and the [sister ML paper](https://arcinstitute.org/manuscripts/Evo2-ML).
+
+With this background on the architecture, let's dive into the training data and training recipe for Evo 2.
 
 ## `OpenGenome2` Dataset
 
@@ -134,11 +146,11 @@ As seen in the charts below, the vast majority of FLOPS are applied in pre-train
 
 Now that you have a basic understanding of the training data and architecture of Evo 2, let's dive into how to use Evo 2 to generate novel genomic sequences.
 
-# Sequence Generation with Evo 2
+# Generating Genomic Sequences
 
 Evo 2 can generate new DNA sequences by starting from a short input sequence and predicting what nucleotides come next, one base at a time. Evo 2 can be used to generate novel sequences with no guidance (zero-shot novel generation), or to search for a sequence that meets a specified goal (directed search).
 
-## Zero-Shot Novel Genomic Sequences
+## Zero-Shot Novel Sequences
 
 The API for requesting a genomic sequence from Evo 2 is quite simple: pass the input and the number of additional tokens and the model will generate the corresponding nucleotides after the initial sequence.
 
@@ -197,7 +209,7 @@ The Evo 2 team worked closely with [Goodfire](https://www.goodfire.ai/) to train
 
 How can we use these features to steer the generation of a sequence?
 
-## Steering Genomic Generation
+## Steering Genomic Generation with Features
 
 In the previous section, we saw how to steer the generation of a sequence to meet a specific heuristic function. But what if there isn’t a well-defined characteristic? What if we just want to explore the space around a generated genomic sequence to see if we can get a sequence that fits our constraints? 
 
@@ -209,7 +221,7 @@ From [Goodfire’s blog on Evo 2](https://www.goodfire.ai/blog/interpreting-evo-
 
 > The potential impact of steering Evo 2 is particularly significant: while language models can be prompted to achieve desired behaviors, a model that 'only speaks nucleotide' cannot. Learning to steer through features would unlock entirely new capabilities.
 
-In Evo 2, there is no equivalent to prompt engineering because the model only understands nucleotide sequences. Of the other three, steering is the only category that does not require inference-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
+In Evo 2, there is no equivalent to prompt engineering because the model only understands genetic sequences. Of the other three, steering is the only category that does not require inference-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
 
 Especially when exploring the space around a generated sequence, steering is a powerful tool. Unfortunately, the Evo 2 team did not provide a way to steer the generation of a sequence, though the Goodfire team hints at future work in this direction.
 
@@ -217,15 +229,15 @@ Especially when exploring the space around a generated sequence, steering is a p
 
 Even without such a tool, we can still visualize the features that Evo 2 has learned to get a sense of what future support for steering might look like.
 
-## Visualizing Features From Evo 2
+## Visualizing Evo 2's Latent Space with Feature Activations
 
-Goodfire’s [mechanistic interpretability visualizer for Evo 2](https://arcinstitute.org/tools/evo/evo-mech-interp) annotates feature activations on nucleotide sequences. 
+Goodfire’s [mechanistic interpretability visualizer for Evo 2](https://arcinstitute.org/tools/evo/evo-mech-interp) annotates feature activations on genomic sequences. 
 
 In the image below, you can see the feature activations for the `Haemophilus influenzae` genome (the common cause of many infections). At different levels of granularity, you can see the activations for α-helices and β-sheets, as well as those at the RNA-level, such as ribosomal RNA.
 
 ![Mechanistic Interpretability Visualizer](/evo2/mech_interp_visualizer.png)
 
-Using AlphaFold3, you can model the 3D protein structure for a nucleotide sequence. You can see in the image below that the the positional pattern of the features matches the simulated secondary-structure elements of the encoded “protein”. This is one of the cooler representations of how genetic language models “learn” 3-D structure of proteins, without being explicitly trained on it.
+Using AlphaFold3, you can model the 3D protein structure for a nucleotide sequence. You can see in the image below that the the positional pattern of the features matches the simulated secondary-structure elements of the encoded “protein”. This is one of the cooler representations of how genomic language models “learn” the 3-D structure of proteins, without being explicitly trained on them.
 
 ![Annotated protein structure](/evo2/protein_structure_annotated.png)
 
@@ -235,12 +247,12 @@ Although all of the identified features above from Evo 2 are biological features
 
 At this point, you've learned about the architecture behind Evo 2, how it can be used to generate novel genomic sequences and how Evo 2 could identify features in the latent space of DNA. What I haven't discussed is the future of Evo 2 and where biologists will use the model.
 
-To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessment:
+To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessments:
 - Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, not on any real-world biological experiments.
 - High-fidelity genome generation at scale is only possible with large models such as Evo 2, not through manual human design. But the utility today is bottlenecked by DNA synthesis costs.
 
 LLMs today are useful for real-world tasks because reward models for language can already be approximated at a reasonable cost. This has been shown with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signals from biological systems is difficult because you need to run experiments *over days or weeks*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to integrate with high-throughput biological systems. To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
 
-Though Evo 2 is a step in the right direction towards an ["App Store for Biology"](https://www.sequoiacap.com/podcast/training-data-patrick-hsu/), the real bottlenecks in applying these models are not in the model architectures themselves, but in the challenges of real-world biological validation. Unlike software, where closed-loop feedback and rapid iteration are possible, biological research is constrained by the cost and complexity of experiments and data collection. Progress with Evo 2 and other models will depend as much on building better experimental and data infrastructure as on advances in model design.
+Though Evo 2 is a step in the right direction towards an ["App Store for Biology"](https://www.sequoiacap.com/podcast/training-data-patrick-hsu/), a clear bottleneck in applying these models is the challenges of real-world biological validation. Unlike software, where closed-loop feedback and rapid iteration are possible, biological research is constrained by the cost and complexity of experiments and data collection. Progress with Evo 2 and other models will depend as much on building better experimental and data infrastructure as on advances in model design.
 
 *Thanks to [Chris Zou](https://x.com/chriswzou) and [Darya Kaviani](https://x.com/daryakaviani) for their feedback & support on this post! I appreciated Asimov's [post on Evo 2](https://www.asimov.press/p/evo-2) and owlposting's [socratic dialogues](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility), which were both an inspiration for this post.*
