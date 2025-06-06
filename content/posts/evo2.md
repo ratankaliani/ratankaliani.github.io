@@ -207,7 +207,7 @@ From [Goodfire’s blog on Evo 2](https://www.goodfire.ai/blog/interpreting-evo-
 
 > The potential impact of steering Evo 2 is particularly significant: while language models can be prompted to achieve desired behaviors, a model that 'only speaks nucleotide' cannot. Learning to steer through features would unlock entirely new capabilities.
 
-In biology, there is no equivalent to prompt engineering because the model only understands nucleotide sequences. Of the other three, steering is the only category that does not require test-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
+In Evo 2, there is no equivalent to prompt engineering because the model only understands nucleotide sequences. Of the other 3, steering is the only category that does not require test-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
 
 Especially when exploring the space around a generated sequence, steering is a powerful tool. Unfortunately, the Evo 2 team did not provide a way to steer the generation of a sequence, though the Goodfire team hints at future work in this direction.
 
