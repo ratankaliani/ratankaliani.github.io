@@ -33,7 +33,7 @@ By the end of this post, my goal is for you to understand (1) why genomic sequen
 
 ![Evo 2 Cover](/evo2/cover.png)
 
-Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, modeling genomic sequences is quite different than natural language.
+Unlike modern LLMs, which are optimized for the constraints of natural language, Evo 2 is tailored to genomic sequences. From a low-entropy vocabulary to complex long-range token dependencies between tokens that are up to 1M tokens apart and single-token precision for clinical accuracy, modeling genomic sequences is quite different from natural language.
 
 Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 modifies both the training data set to include eukaryotic genomes and the architecture of Evo to work for the larger eukaryotic genomes.
 
@@ -67,7 +67,7 @@ To make sure that you don’t get overwhelmed by the breadth of biological knowl
 
 To contextualize Evo 2, it’s also important to understand the lineage of models that it follows. There are two main model lineages that are relevant to Evo 2, large protein language models, trained on protein sequences, and large genomics models, trained on genomic DNA sequences.
 
-[AlphaFold](https://alphafold.ebi.ac.uk/), one of the first large protein language models (PLMs) came out in 2020 and predicted protein structures. It clearly demonstrated how ML algorithms can “learn” biological structures better than humans forlaboratory relevant tasks. Then in 2021, [ESMFold](https://github.com/facebookresearch/esm) demonstrated how the transformer architecture could be applied to protein sequences to predict structural features purely from the embeddings of large-scale PLMs. 
+[AlphaFold](https://alphafold.ebi.ac.uk/), one of the first large protein language models (PLMs) came out in 2020 and predicted protein structures. It clearly demonstrated how ML algorithms can “learn” biological structures better than humans for laboratory relevant tasks. Then in 2021, [ESMFold](https://github.com/facebookresearch/esm) demonstrated how the transformer architecture could be applied to protein sequences to predict structural features purely from the embeddings of large-scale PLMs. 
 
 Around 2021, most genomics modeling was highly task-specific. Models such as [Enformer](https://deepmind.google/discover/blog/predicting-gene-expression-with-ai/) and [GenSLM](https://github.com/ramanathanlab/genslm) were used for epigenomic signals and microbial genome generation, but didn’t generalize well beyond their training set. In 2024, Evo marked a similar transition to ESMFold, but for genomics data. Evo was the first model to show that a long-context genomic sequence model trained on generic prokaryotic data could yield sequences with high prokaryotic sequence fitness *without any task-specific fine-tuning*. Evo 2 naturally followed Evo, but with architectural changes to perform well for eukaryotic data.
 
@@ -87,7 +87,7 @@ The motivations for Evo 2’s architecture are quite different than those for tr
 2. The vocabulary size for Evo 2 is O(10), with most tokens concentrated in the nucleotides for DNA, AGCT, and RNA, AGCU. This is drastically smaller than the vocabulary size in [modern LLMs, which are typically between 10K to 100K tokens](https://github.com/openai/tiktoken).
 3. Single-nucleotide resolution is critical. To make clinically relevant predictions for SNV’s (among other targets), you need to know exactly which nucleotide changes. Increasing the size of the vocabulary to reduce the context length is a patchwork solution and is untenable for this reason.
 
-Traditional transformers which are used for language modeling are not able to effectively handle 1M tokens of context with global long-range dependencies. Most LLMs (e.g. GPT-4, Claude4) max out at a 200K context window due to the [quadratic compute requirement for attention](https://arxiv.org/pdf/2307.08691). 
+Traditional transformers that are used for language modeling are not able to effectively handle 1M tokens of context with global long-range dependencies. Most LLMs (e.g. GPT-4, Claude4) max out at a 200K context window due to the [quadratic compute requirement for attention](https://arxiv.org/pdf/2307.08691). 
 
 Methods of achieving longer-context with transformers such as local + periodic global attention still don’t reduce this compute budget requirement. So, out-of-the-box transformers will be quite expensive for modeling genomic sequences at the scale of millions of tokens.
 
@@ -128,7 +128,7 @@ To capture both local functional elements and long‑range genomic dependencies,
 
 ![Evo 2 Training Composition](/evo2/training_composition_mix.png)
 
-As seen in the charts below, the vast majority of FLOPS are applied in pre-training. From pre-training the model gathers knowledge about biological structure, and mid-training extends this structure from just eukaryotic genes to genomic sequences from the genome data bank.
+As seen in the charts below, the vast majority of FLOPS are applied in pre-training. During pre-training, the model gathers knowledge about biological structure, and mid-training extends this structure from just eukaryotic genes to genomic sequences from the genome data bank.
 
 ![Evo 2 Training Tokens](/evo2/tokens_consumed_training.png)
 
@@ -146,9 +146,11 @@ The API for requesting a genomic sequence from Evo 2 is quite simple: pass the i
 dna_seq = evo2_model.sample(prompt="ATGCTG", ..., number_of_tokens=1000)
 ```
 
-To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human seed. While there were no wet-lab experiments to validate the generated sequences, the Evo 2 team uses computational methods to assess their similarity to natural sequences and verify they contain critical mitochondrial DNA components. Specifically, they deploy [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis to verify sequence homology of the generated sequence against different naturally occurring organisms and [AlphaFold 3](https://alphafold.ebi.ac.uk/) to validate the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the raw “sequence” and the proteins that it encodes are “viable”. 
+To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human seed. 
 
-Below, is a sample of how the Evo 2 model was used to generate a set of genomes from a small human mitochondrial DNA seed. The created genomes ranged from being most similar to a sheep or a fish, all from the same seed.
+Specifically, they deploy [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis to verify sequence homology of the generated mitochondrial DNA sequences against different naturally occurring organisms. Then, with [AlphaFold 3](https://alphafold.ebi.ac.uk/), they validate the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the “sequence” and the encoded proteins from the sequence are “viable”.
+
+Below is a sample of how the Evo 2 model was used to generate a set of genomes from a small human mitochondrial DNA seed. The generated genomes ranged from being most similar to a sheep or a fish, all from the same human mitochondrial seed.
 
 ![Diverse Genomes from Human Base](/evo2/diverse_genome.png)
 
@@ -174,18 +176,18 @@ Evo 2 uses Enformer and Borzoi as heuristic functions for evaluating a generated
 
 1. Sample N times (fan-out) from Evo 2 given the same prompt.
 2. Score the N samples with Enformer and Borzoi.
-3. Select the top K chunks based on the scores and append to the prompt.
+3. Select the top K sequences based on their scores and use them as the starting point for the next generation step.
 4. Repeat until you’ve generated a nucleotide sequence of length L.
 
 With this approach, the Evo 2 team was able to generate genomic sequences that encode chromatin accessibility patterns that match the Morse code encoding of “Evo 2” and “ARC”. You can see these encoded in the chromatin accessibility diagrams below.
 
 ![Chromatin accessibility](/evo2/chromatin_message.png)
 
-By scaling inference-time compute, the Evo 2 team demonstrated how to steer the generation of a sequence to meet a specific heuristic function.
+By scaling inference-time compute, the Evo 2 team demonstrated how to steer the generation of a sequence to meet a specific heuristic function. Scaling inference-time compute is powerful for guiding sequence generation, but ultimately, the diversity of genomes Evo 2 can produce is bounded by what the model has learned.
 
 # Evo 2 + Mechanistic Interpretability
 
-Scaling inference-time compute is powerful for guiding sequence generation, but ultimately, the diversity of genomes Evo 2 can produce is bounded by what the model has learned. [Mechanistic interpretability](https://www.transformer-circuits.pub/2022/mech-interp-essay) helps reveal the underlying biological concepts and features that Evo 2 is actually capable of generating.
+[Mechanistic interpretability](https://www.transformer-circuits.pub/2022/mech-interp-essay) can help reveal the underlying biological concepts and genomic features that Evo 2 is capable of generating.
 
 The Evo 2 team worked closely with [Goodfire](https://www.goodfire.ai/) to train [sparse auto-encoders (SAEs)](https://adamkarvonen.github.io/machine_learning/2024/06/11/sae-intuitions.html) to uncover the latent concept representations within Evo 2. SAE's trained on Evo 2 uncover several biologically relevant features, purely from nucleotide sequences:
 
@@ -193,7 +195,7 @@ The Evo 2 team worked closely with [Goodfire](https://www.goodfire.ai/) to train
 - Structural motifs (α-helices, RNA stem-loops).
 - Protein structure characteristics
 
-How can we use these features to steer the generation of a sequence? And, is there a better way to visualize these features than language?
+How can we use these features to steer the generation of a sequence?
 
 ## Steering Genomic Generation
 
@@ -207,7 +209,7 @@ From [Goodfire’s blog on Evo 2](https://www.goodfire.ai/blog/interpreting-evo-
 
 > The potential impact of steering Evo 2 is particularly significant: while language models can be prompted to achieve desired behaviors, a model that 'only speaks nucleotide' cannot. Learning to steer through features would unlock entirely new capabilities.
 
-In Evo 2, there is no equivalent to prompt engineering because the model only understands nucleotide sequences. Of the other 3, steering is the only category that does not require test-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
+In Evo 2, there is no equivalent to prompt engineering because the model only understands nucleotide sequences. Of the other three, steering is the only category that does not require inference-time compute to scale. Rather, steering can be used to directly guide sequences towards having characteristics in the latent space of DNA without requiring an explicit heuristic function.
 
 Especially when exploring the space around a generated sequence, steering is a powerful tool. Unfortunately, the Evo 2 team did not provide a way to steer the generation of a sequence, though the Goodfire team hints at future work in this direction.
 
@@ -227,7 +229,7 @@ Using AlphaFold3, you can model the 3D protein structure for a nucleotide sequen
 
 ![Annotated protein structure](/evo2/protein_structure_annotated.png)
 
-Although all of the identified features above from Evo 2 are biological features which are commonplace in literature, there *could* be learned representations of “unknown” biological features in scientific literature discovered by the mechanistic interpretability. If large models can learn “deeper representations” beyond what’s known in literature, simply training a model and interpreting it could be enough to unlock new research.
+Although all of the identified features above from Evo 2 are biological features which are commonplace in literature, mechanistic interpretability could discover learned representations of unknown biological features not yet documented in scientific literature. If large models can learn “deeper representations” beyond what’s known in literature, simply training a model and interpreting it could be enough to unlock new research.
 
 # Takeaways
 
@@ -235,9 +237,9 @@ At this point, you've learned about the architecture behind Evo 2, how it can be
 
 To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessment:
 - Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, not on any real-world biological experiments.
-- High-fidelity genome generation at scale is only possible with large models such as Evo 2, not through manual human design. But, the utility today is bottlenecked by DNA synthesis costs.
+- High-fidelity genome generation at scale is only possible with large models such as Evo 2, not through manual human design. But the utility today is bottlenecked by DNA synthesis costs.
 
-LLMs today are useful for real-world tasks because reward models for language can already be approximated at a reasonable cost. This has been shown with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signals from biological systems is difficult because you need to run experiments *over days or weeks*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to loop in high-throughput biological systems! To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
+LLMs today are useful for real-world tasks because reward models for language can already be approximated at a reasonable cost. This has been shown with RLHF for qualitative reasoning tasks and specific RL reward models for tasks such as math and coding. On the other hand, DNA foundation models like Evo 2 don’t have access to the same quantity of high fidelity data. Getting reward signals from biological systems is difficult because you need to run experiments *over days or weeks*, which can't be accelerated by just adding more compute. To create useful RL environments for Evo 2, you need to integrate with high-throughput biological systems. To accelerate biological research with Evo 2, we’ll need better virtual environments for training, tighter integration with high-throughput experiments, and reward modeling that bridges the computational-to-experimental gap.
 
 Though Evo 2 is a step in the right direction towards an ["App Store for Biology"](https://www.sequoiacap.com/podcast/training-data-patrick-hsu/), the real bottlenecks in applying these models are not in the model architectures themselves, but in the challenges of real-world biological validation. Unlike software, where closed-loop feedback and rapid iteration are possible, biological research is constrained by the cost and complexity of experiments and data collection. Progress with Evo 2 and other models will depend as much on building better experimental and data infrastructure as on advances in model design.
 
