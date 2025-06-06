@@ -158,9 +158,9 @@ The API for requesting a genomic sequence from Evo 2 is quite simple: pass the i
 dna_seq = evo2_model.sample(prompt="ATGCTG", ..., number_of_tokens=1000)
 ```
 
-To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human seed. 
+To demonstrate how Evo 2 generates “novel” genomic sequences and generalizes well, the Evo 2 team generated a diverse set of “viable” eukaryotic genomes starting from a human mitochondrial sequence. 
 
-Specifically, they deploy [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis to verify sequence homology of the generated mitochondrial DNA sequences against different naturally occurring organisms. Then, with [AlphaFold 3](https://alphafold.ebi.ac.uk/), they validate the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the “sequence” and the encoded proteins from the sequence are “viable”.
+Using [BLAST](https://en.wikipedia.org/wiki/BLAST_(biotechnology)) analysis, they verified that the generated mitochondrial DNA sequences were similar to naturally occurring organisms. Then, with [AlphaFold 3](https://alphafold.ebi.ac.uk/), they validated that the generated structures matched expected mitochondrial protein complex folds. In simpler terms, scientists check that both the “sequence” and the encoded proteins from the sequence are “viable”.
 
 Below is a sample of how the Evo 2 model was used to generate a set of genomes from a small human mitochondrial DNA seed. The generated genomes ranged from being most similar to a sheep or a fish, all from the same human mitochondrial seed.
 
@@ -184,7 +184,7 @@ Beam search is a method for generating sequences where, at each step, you genera
 
 Let’s walk through how the Evo 2 team uses beam search to generate proteins for a specific heuristic: *chromatin accessibility* patterns. Chromatin accessibility refers to how “open” or “closed” regions of DNA are. 
 
-Evo 2 uses Enformer and Borzoi as heuristic functions for evaluating a generated sequence. Both models yield whether a nucleotide will have accessible chromatin given a window of nucleotides around the target. With beam search, Evo 2 guides the generated genomic sequence to encode specific chromatin accessibility patterns in nucleotides with the following protocol:
+Evo 2 uses [Enformer](https://www.nature.com/articles/s41592-021-01252-x) and [Borzoi](https://www.biorxiv.org/content/10.1101/2023.08.30.555582v1) as heuristic functions for evaluating a generated sequence. Both models yield whether a nucleotide will have accessible chromatin given a window of nucleotides around the target. With beam search, Evo 2 guides the generated genomic sequence to encode specific chromatin accessibility patterns in nucleotides with the following protocol:
 
 1. Sample N times (fan-out) from Evo 2 given the same prompt.
 2. Score the N samples with Enformer and Borzoi.
