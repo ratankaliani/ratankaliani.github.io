@@ -88,11 +88,11 @@ Around 2021, most genomics modeling was highly task-specific. Models such as [En
 
 With this background on the biology and model lineages behind Evo 2, let's dive into what's new and unique about the Evo 2 architecture.
 
-Evo 2 uses a [“multi-hybrid” architecture](https://arxiv.org/abs/2503.01868), a Transformer-like architecture that extends the original Evo architecture for better efficiency and longer context. In this section, I'll go over the motivations for Evo 2's architecture (StripedHyena 2), the architecture itself, and the training recipe that Evo 2 used.
+Evo 2 uses a [“multi-hybrid” architecture](https://arxiv.org/abs/2503.01868), a Transformer-like architecture that performs better for the longer context required for genomic modeling using convolutional operators. In this section, I'll go over the Evo 2 architecture, StripedHyena 2, and Evo 2's training recipe.
 
 ## Architecture Motivations
 
-The motivations for Evo 2’s architecture are quite different than those for traditional language models.
+The motivations for Evo 2’s architecture are quite different than those for traditional LLMs.
 
 1. The context length required for effective genomic modeling is on the order of millions of base pairs due to long-range dependencies between nucleotides. In large nucleotide sequences, “far-apart” bases can still interact with each other. Nucleotide strands fold in 3-D and folding will pack distant nucleotides side by side. In fact, SNVs can cause conditions such as thumb duplication.
 2. The vocabulary size for Evo 2 is O(10), with most tokens concentrated in the nucleotides for DNA, AGCT, and RNA, AGCU. This is drastically smaller than the vocabulary size in [modern LLMs, which are typically between 10K to 100K tokens](https://github.com/openai/tiktoken).
