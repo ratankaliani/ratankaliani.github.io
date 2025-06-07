@@ -38,7 +38,7 @@ Unlike modern LLMs, which are optimized for the constraints of natural language,
 
 Evo 2 is a successor to [Evo](https://arcinstitute.org/news/blog/evo), which was the first large genomic language model released by Arc back in early 2024. Evo showed that large, long-context genomic DNA foundation models could viably generate “realistic” genomic sequences. But, Evo only focused on prokaryotes, and didn’t generalize well to human genomes. To accurately predict animal and human genomic sequences, Evo 2 also trained on eukaryotic genomes and modified the architecture of Evo to work for the larger genomes in eukaryotes.
 
-Evo 2 was trained on over 2,000 H100 GPUs for several months, putting my estimate of the cost of the run at ~$10M. With Evo 2, you can:
+Evo 2 was trained on over 2,000 H100 GPUs for several months, putting the estimated cost of the run at ~$10M. With Evo 2, you can:
 
 - Generate novel genetic sequences across both eukaryotes and prokaryotes that exhibit high fitness.
 - Predict the functional impact of specific genetic variants, such as BRCA1 mutations linked to increased breast cancer risk.
@@ -248,7 +248,7 @@ Although all of the identified features above from Evo 2 are biological features
 
 At this point, you've learned about the architecture behind Evo 2, how it can be used to generate novel genomic sequences and how Evo 2 could identify features in the latent space of DNA. What I haven't discussed is the future of Evo 2 and where biologists will use the model.
 
-To get a sense of the limitations and potential of Evo 2, I'd recommend reading the socratic dialogue in [owlposting](https://x.com/owl_posting)'s [two](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [blogs](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) about Evo 2. I generally agree with owlposting's high-level assessments:
+To get a sense of the limitations and potential of Evo 2, I'd recommend reading [owlposting](https://x.com/owl_posting)'s [socratic](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility) [dialogue](https://www.owlposting.com/p/a-socratic-dialogue-over-the-utility-a78) on Evo 2. I generally agree with owlposting's high-level assessments:
 - Evo 2 needs real-world validation for pathogenicity prediction to be used in production workflows, because it was only evaluated with digital models, not on any real-world biological experiments.
 - High-fidelity genome generation at scale is only possible with large models such as Evo 2, not through manual human design. But the utility today is bottlenecked by DNA synthesis costs.
 
