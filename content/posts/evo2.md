@@ -19,6 +19,7 @@ math = false
 mermaid = false
 featured = false
 reaction = false
+image = "/evo2/cover.png"
 +++
 
 In February, [Arc Institute](https://arcinstitute.org/) released [Evo 2](https://arcinstitute.org/tools/evo), a DNA foundation model trained on genomes from all domains of life. [According to Arc](https://www.biorxiv.org/content/10.1101/2025.02.18.638918v1), this represents the largest training effort in computational biology to date, with novel architectural advances to handle genomic sequences.
