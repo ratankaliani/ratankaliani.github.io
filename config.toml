@@ -48,6 +48,7 @@ sections = [
   { name = "posts", path = "/posts", is_external = false },
   # { name = "tags", path = "/tags", is_external = false },
   { name = "curius", path = "https://curius.app/ratan-kaliani", is_external = true },
+  { name = "bookshelf", path = "https://goodreads.com/ratan", is_external = true },
 ]
 blog_section_path = "/posts"
 

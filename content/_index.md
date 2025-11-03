@@ -26,6 +26,6 @@ recent_more_text = "more »"
 date_format = "%b %-d, %Y"
 +++
 
-Hi, I'm Ratan.
+Hi, I'm Ratan. I'm currently a member of technical staff at [Decagon](https://decagon.ai).
 
 Previously, I was a founding engineer at [Succinct](https://succinct.xyz). Before that, I built and researched core crypto infrastructure at [Coinbase](https://coinbase.com) and [Polychain Capital](https://polychain.capital). I studied electrical engineering and computer science at Berkeley. While there, I led [Blockchain at Berkeley](https://blockchain.berkeley.edu) and directed Berkeley's [blockchain startup accelerator](https://xcelerator.berkeley.edu). I was involved in [Accel Scholars](https://eecs.berkeley.edu/resources/undergrads/accel/) and the [Paradigm](https://paradigm.xyz) Fellowship.
