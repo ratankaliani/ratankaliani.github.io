@@ -16,7 +16,7 @@ links = [
     { name = "GitHub", icon = "github", url = "https://github.com/ratankaliani" },
     { name = "Twitter", icon = "twitter", url = "https://twitter.com/ratankaliani" },
     { name = "Email", icon = "email", url = "mailto:ratan.kaliani@gmail.com" },
-    { name = "LinkedIn", icon = "linkedin", url = "https://www.linkedin.com/in/ratan-kaliani/" },
+    { name = "LinkedIn", icon = "linkedin", url = "https://www.linkedin.com/in/ratankaliani/" },
 ]
 
 # Show a few recent posts in home page
