@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+	<title>Notes</title>
+	<subtitle>Short notes and thoughts.</subtitle>
+	<link href="https://ratankaliani.com/notes/feed.xml" rel="self" type="application/atom+xml"/>
+    <link href="https://ratankaliani.com/notes/"/>
+	<updated>2025-06-06T00:00:00+00:00</updated>
+	<id>https://ratankaliani.com/notes/feed.xml</id>
+	<entry xml:lang="en">
+		<title>Time Asymmetry</title>
+		<published>2025-06-03T00:00:00+00:00</published>
+		<updated>2025-06-06T00:00:00+00:00</updated>
+		<link href="https://ratankaliani.com/notes/time-asymmetry/" type="text/html"/>
+		<id>https://ratankaliani.com/notes/time-asymmetry/</id>
+		<content type="html">&lt;p&gt;What do [land](sf real estate), &lt;a href=&quot;https:&#x2F;&#x2F;ratankaliani.com&#x2F;notes&#x2F;time-asymmetry&#x2F;oai&#x2F;anthropic&quot;&gt;equity&lt;&#x2F;a&gt; and [sports teams](thrive eternal) have in common? All are appreciating assets where there&#x27;s importance on investment today as the future value of these assets in the future is high. &lt;em&gt;You won&#x27;t have the chance to buy SF land at the same price today as the price in the future.&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ll make the argument that taxes, adherence to regulations and integrity are places where we should put importance on today because the government will have infinite intelligence to enforce these assets in the future.&lt;&#x2F;p&gt;
+&lt;p&gt;We often consider this with respect to &lt;a rel=&quot;nofollow noreferrer&quot; href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Roko%27s_basilisk&quot;&gt;Roko&#x27;s Basilisk&lt;&#x2F;a&gt;, but not in more pedestrian cases. This year, thousands filed their taxes with Opus 4.7 and a non-negligible number of folks in San Francisco chose to ignore filing taxes for their crypto, their equity or anything else. The government will soon have infinite intelligence to litigate your tax representations. While there is some investigative work applied here, the value of semantic intelligence in document processing appears to be what you need. You have Opus 4.7, the government has Opus 5, 6, 7 and 8 to litigate you over the next 4 years.&lt;&#x2F;p&gt;
+&lt;p&gt;The same holds true for integrity. Be mindful of how you act today, as your decisions will be analyzed by intelligence that is 100x more powerful in the future. The term &quot;forgotten to history&quot; will ring less true as all decisions are analyzed. We see this problem in quantum cryptography, where existing cryptographic algorithms (ECDSA, EDDSA).&lt;&#x2F;p&gt;
+&lt;p&gt;Your tax filings and integrity will be evaluated at depth in the future. A full analysis of a person&#x27;s decisions. Be brutal about those decisions.&lt;&#x2F;p&gt;
+</content>
+	</entry>
+</feed>
